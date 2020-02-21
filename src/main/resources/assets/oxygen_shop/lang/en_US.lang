@@ -1,0 +1,33 @@
+key.oxygen_shop.shopMenu=Open Shop Menu
+
+oxygen_shop.gui.settings.module.shop=Shop
+oxygen_shop.gui.settings.option.addShopMenu=Shop Menu
+oxygen_shop.gui.settings.option.alignmentShopMenu=Shop Menu
+
+oxygen_shop.gui.shop.title=Shop
+oxygen_shop.gui.shop.category=Category:
+oxygen_shop.gui.shop.search=Text Search:
+
+oxygen_shop.gui.shop.cart=Cart
+oxygen_shop.gui.shop.purchaseButton=Buy
+
+oxygen_shop.gui.shop.tooltip.latestFilters=Latest
+oxygen_shop.gui.shop.tooltip.resetFilters=Reset
+
+oxygen_shop.gui.shop.offer.discount=Discount %s
+
+oxygen_shop.status.message.purchaseSuccessful=Purchase successful
+oxygen_shop.status.message.purchaseFailed=Purchase failed
+oxygen_shop.status.message.offersReloaded=Offers reloaded
+oxygen_shop.status.message.offersSaved=Offers saved
+oxygen_shop.status.message.offerCreated=Offer created
+oxygen_shop.status.message.offerCreationFailed=Offer creation failed
+oxygen_shop.status.message.offerRemoved=Offer removed
+
+oxygen_shop.status.message.inventoryFull=Inventory is full
+oxygen_shop.status.message.mailboxFull=Mailbox is full
+
+shop.purchased=Shop: Purchase
+shop.purchasedItemMessage=You purchased an item in a shop.
+
+oxygen_shop.command.client.dataReset=Oxygen Shop client data reset.
