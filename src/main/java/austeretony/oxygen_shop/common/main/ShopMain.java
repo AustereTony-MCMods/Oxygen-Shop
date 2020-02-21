@@ -23,6 +23,7 @@ import austeretony.oxygen_shop.client.gui.shop.ShopMenuScreen;
 import austeretony.oxygen_shop.client.settings.EnumShopClientSetting;
 import austeretony.oxygen_shop.client.settings.gui.EnumShopGUISetting;
 import austeretony.oxygen_shop.common.config.ShopConfig;
+import austeretony.oxygen_shop.common.network.client.CPOpenShopMenu;
 import austeretony.oxygen_shop.common.network.client.CPPurchaseSuccessful;
 import austeretony.oxygen_shop.common.network.server.SPPurchaseItems;
 import austeretony.oxygen_shop.server.OffersSyncHandlerServer;
@@ -102,6 +103,7 @@ public class ShopMain {
     }
 
     private void initNetwork() {
+        OxygenMain.network().registerPacket(CPOpenShopMenu.class);
         OxygenMain.network().registerPacket(CPPurchaseSuccessful.class);
 
         OxygenMain.network().registerPacket(SPPurchaseItems.class);

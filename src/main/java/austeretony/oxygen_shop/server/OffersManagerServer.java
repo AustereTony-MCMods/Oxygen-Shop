@@ -14,8 +14,8 @@ import austeretony.oxygen_core.common.main.OxygenMain;
 import austeretony.oxygen_core.common.sound.OxygenSoundEffects;
 import austeretony.oxygen_core.server.OxygenManagerServer;
 import austeretony.oxygen_core.server.api.CurrencyHelperServer;
+import austeretony.oxygen_core.server.api.InventoryProviderServer;
 import austeretony.oxygen_core.server.api.OxygenHelperServer;
-import austeretony.oxygen_core.server.api.PlayerInventoryProviderServer;
 import austeretony.oxygen_core.server.api.PrivilegesProviderServer;
 import austeretony.oxygen_core.server.api.SoundEventHelperServer;
 import austeretony.oxygen_core.server.api.TimeHelperServer;
@@ -52,7 +52,7 @@ public class OffersManagerServer {
                         return;
                     }
                 } else {//inventory
-                    int emptySlots = PlayerInventoryProviderServer.getPlayerInventory().getEmptySlotsAmount(playerMP);
+                    int emptySlots = InventoryProviderServer.getPlayerInventory().getEmptySlotsAmount(playerMP);
                     if (emptySlots < offerIds.length) {
                         this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.INVENTORY_FULL);
                         return;
@@ -89,8 +89,7 @@ public class OffersManagerServer {
                                     Parcel.create(shopOffer.getStackWrapper(), itemAmount), 
                                     true);
                         else//inventory
-                            CommonReference.delegateToServerThread(
-                                    ()->PlayerInventoryProviderServer.getPlayerInventory().addItem(playerMP, shopOffer.getStackWrapper(), itemAmount));
+                            InventoryProviderServer.getPlayerInventory().addItem(playerMP, shopOffer.getStackWrapper(), itemAmount);
 
                         if (ShopConfig.ADVANCED_LOGGING.asBoolean())
                             OxygenMain.LOGGER.info("[Shop] Player purchased an item. Player: {}/{}, offer id: {}, item: {}, amount: {}, total price: {}.",

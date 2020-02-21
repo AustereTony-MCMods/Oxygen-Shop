@@ -1,5 +1,6 @@
 package austeretony.oxygen_shop.client.gui.shop;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +22,8 @@ import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList;
 import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList.OxygenDropDownListEntry;
 import austeretony.oxygen_core.client.gui.elements.OxygenInventoryLoad;
 import austeretony.oxygen_core.client.gui.elements.OxygenScrollablePanel;
+import austeretony.oxygen_core.client.gui.elements.OxygenSorter;
+import austeretony.oxygen_core.client.gui.elements.OxygenSorter.EnumSorting;
 import austeretony.oxygen_core.client.gui.elements.OxygenTextField;
 import austeretony.oxygen_core.client.gui.elements.OxygenTextLabel;
 import austeretony.oxygen_core.client.gui.elements.OxygenTexturedButton;
@@ -39,6 +42,8 @@ public class ShopSection extends AbstractGUISection {
     private OxygenButton purchaseButton;
 
     private OxygenTexturedButton applyLatestFiltersButton, resetFiltersButton;
+
+    private OxygenSorter nameSorter, priceSorter;
 
     private OxygenScrollablePanel offersPanel, cartPanel;
 
@@ -78,8 +83,20 @@ public class ShopSection extends AbstractGUISection {
         this.addElement(this.applyLatestFiltersButton = new OxygenTexturedButton(205, 20, 5, 5, OxygenGUITextures.CLOCK_ICONS, 5, 5, ClientReference.localize("oxygen_shop.gui.shop.tooltip.latestFilters")));         
         this.addElement(this.resetFiltersButton = new OxygenTexturedButton(212, 20, 5, 5, OxygenGUITextures.CROSS_ICONS, 5, 5, ClientReference.localize("oxygen_shop.gui.shop.tooltip.resetFilters")));         
 
+        this.addElement(this.priceSorter = new OxygenSorter(6, 38, EnumSorting.DOWN, ClientReference.localize("oxygen_core.gui.price")));   
+        this.priceSorter.setClickListener((sorting)->{
+            this.nameSorter.reset();
+            this.filterOffers();
+        });
+
+        this.addElement(this.nameSorter = new OxygenSorter(12, 38, EnumSorting.INACTIVE, ClientReference.localize("oxygen_core.gui.name")));  
+        this.nameSorter.setClickListener((sorting)->{
+            this.priceSorter.reset();
+            this.filterOffers();
+        });
+
         //offers panel
-        this.addElement(this.offersPanel = new OxygenScrollablePanel(this.screen, 6, 37, this.getWidth() - 105, 16, 1, 80, 8, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
+        this.addElement(this.offersPanel = new OxygenScrollablePanel(this.screen, 6, 47, this.getWidth() - 105, 16, 1, 80, 8, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
 
         this.offersPanel.<ShopOfferPanelEntry>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
             if (mouseButton == 0)
@@ -129,14 +146,14 @@ public class ShopSection extends AbstractGUISection {
         // * shopping cart
         // *
 
-        this.addElement(new OxygenTextLabel(this.getWidth() - 90, 35, ClientReference.localize("oxygen_shop.gui.shop.cart"), EnumBaseGUISetting.TEXT_SCALE.get().asFloat(), EnumBaseGUISetting.TEXT_ENABLED_COLOR.get().asInt()));
+        this.addElement(new OxygenTextLabel(this.getWidth() - 90, 45, ClientReference.localize("oxygen_shop.gui.shop.cart"), EnumBaseGUISetting.TEXT_SCALE.get().asFloat(), EnumBaseGUISetting.TEXT_ENABLED_COLOR.get().asInt()));
 
-        this.addElement(this.cartPanel = new OxygenScrollablePanel(this.screen, this.getWidth() - 90, 37, 81, 16, 1, ShopConfig.SHOP_CART_SIZE.asInt(), 7, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
+        this.addElement(this.cartPanel = new OxygenScrollablePanel(this.screen, this.getWidth() - 90, 47, 81, 16, 1, ShopConfig.SHOP_CART_SIZE.asInt(), 7, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
 
-        this.addElement(this.totalPriceValue = new OxygenCurrencyValue(this.getWidth() - 14, 164));   
+        this.addElement(this.totalPriceValue = new OxygenCurrencyValue(this.getWidth() - 14, 174));   
         this.totalPriceValue.setValue(this.screen.currencyProperties.getIndex(), 0L);
 
-        this.addElement(this.purchaseButton = new OxygenButton(this.getWidth() - 90, 163, 40, 10, ClientReference.localize("oxygen_shop.gui.shop.purchaseButton")).disable());
+        this.addElement(this.purchaseButton = new OxygenButton(this.getWidth() - 90, 173, 40, 10, ClientReference.localize("oxygen_shop.gui.shop.purchaseButton")).disable());
         this.purchaseButton.setKeyPressListener(Keyboard.KEY_E, ShopManagerClient.instance().getShoppingCartManager()::purchaseItems);
     }
 
@@ -170,7 +187,7 @@ public class ShopSection extends AbstractGUISection {
                 .filter((offer)->(this.filterByCategory(offer)))
                 .filter((offer)->(this.filterByName(offer)))
                 .sorted((o1, o2)->(o1.getStackWrapper().itemId - o2.getStackWrapper().itemId))
-                .sorted((o1, o2)->o1.getPrice() < o2.getPrice() ? - 1 : o1.getPrice() > o2.getPrice() ? 1 : 0)
+                .sorted(this.getSortingComparator())
                 .collect(Collectors.toList());
     }
 
@@ -180,6 +197,24 @@ public class ShopSection extends AbstractGUISection {
 
     private boolean filterByName(ShopOffer offer) {
         return this.textField.getTypedText().isEmpty() || offer.getStackWrapper().getCachedItemStack().getDisplayName().contains(textSearchCached = this.textField.getTypedText());
+    }
+
+    private Comparator<ShopOffer> getSortingComparator() {
+        if (this.nameSorter.getCurrentSorting() != EnumSorting.INACTIVE) {
+            if (this.nameSorter.getCurrentSorting() == EnumSorting.DOWN)
+                return (o1, o2)->getItemDisplayName(o1).compareTo(getItemDisplayName(o2));
+                else
+                    return (o1, o2)->getItemDisplayName(o2).compareTo(getItemDisplayName(o1));
+        } else {
+            if (this.priceSorter.getCurrentSorting() == EnumSorting.DOWN)
+                return (o1, o2)->o1.getPrice() < o2.getPrice() ? - 1 : o1.getPrice() > o2.getPrice() ? 1 : 0;
+                else
+                    return (o1, o2)->o2.getPrice() < o1.getPrice() ? - 1 : o2.getPrice() > o1.getPrice() ? 1 : 0;
+        }
+    }
+
+    public static String getItemDisplayName(ShopOffer offer) {
+        return offer.getStackWrapper().getCachedItemStack().getDisplayName();
     }
 
     public void loadCart() {

@@ -8,8 +8,8 @@ import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.core.GUIWorkspace;
 import austeretony.alternateui.util.EnumGUIAlignment;
 import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.api.InventoryProviderClient;
 import austeretony.oxygen_core.client.api.OxygenHelperClient;
-import austeretony.oxygen_core.client.api.PlayerInventoryProviderClient;
 import austeretony.oxygen_core.client.currency.CurrencyProperties;
 import austeretony.oxygen_core.client.gui.menu.OxygenMenuEntry;
 import austeretony.oxygen_core.common.item.ItemStackWrapper;
@@ -37,7 +37,7 @@ public class ShopMenuScreen extends AbstractGUIScreen {
         OxygenHelperClient.syncData(ShopMain.SHOP_OFFERS_DATA_ID);
 
         this.currencyProperties = OxygenHelperClient.getCurrencyProperties(ShopConfig.SHOP_CURRENCY_INDEX.asInt());
-        this.inventoryContent = PlayerInventoryProviderClient.getPlayerInventory().getInventoryContent(ClientReference.getClientPlayer());
+        this.inventoryContent = InventoryProviderClient.getPlayerInventory().getInventoryContent(ClientReference.getClientPlayer());
     }
 
     @Override
@@ -57,12 +57,12 @@ public class ShopMenuScreen extends AbstractGUIScreen {
             alignment = EnumGUIAlignment.CENTER;
             break;
         }
-        return new GUIWorkspace(this, 313, 187).setAlignment(alignment, 0, 0);
+        return new GUIWorkspace(this, 313, 197).setAlignment(alignment, 0, 0);
     }
 
     @Override
     protected void initSections() {
-        this.getWorkspace().initSection(this.shopSection = (ShopSection) new ShopSection(this).enable());
+        this.getWorkspace().initSection(this.shopSection = new ShopSection(this));
     }
 
     @Override

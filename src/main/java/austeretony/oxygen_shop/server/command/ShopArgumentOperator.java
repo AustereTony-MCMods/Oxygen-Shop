@@ -1,7 +1,12 @@
 package austeretony.oxygen_shop.server.command;
 
+import austeretony.oxygen_core.common.api.CommonReference;
 import austeretony.oxygen_core.common.command.ArgumentExecutor;
 import austeretony.oxygen_core.common.item.ItemStackWrapper;
+import austeretony.oxygen_core.common.main.OxygenMain;
+import austeretony.oxygen_core.server.api.OxygenHelperServer;
+import austeretony.oxygen_shop.common.main.ShopMain;
+import austeretony.oxygen_shop.common.network.client.CPOpenShopMenu;
 import austeretony.oxygen_shop.server.ShopManagerServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -20,11 +25,18 @@ public class ShopArgumentOperator implements ArgumentExecutor {
 
     @Override
     public void process(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        EntityPlayerMP playerMP = null;
+        EntityPlayerMP playerMP = null, targetPlayerMP;
         if (sender instanceof EntityPlayerMP)
             playerMP = CommandBase.getCommandSenderAsPlayer(sender);
+
         if (args.length >= 2) {
-            if (args[1].equals("-reload-offers"))
+            if (args[1].equals("-open-menu")) {
+                if (args.length == 3) {
+                    targetPlayerMP = CommandBase.getPlayer(server, sender, args[2]);
+                    OxygenHelperServer.resetTimeOut(CommonReference.getPersistentUUID(targetPlayerMP), ShopMain.SHOP_MENU_TIMEOUT_ID);
+                    OxygenMain.network().sendTo(new CPOpenShopMenu(), targetPlayerMP);
+                }
+            } else if (args[1].equals("-reload-offers"))
                 ShopManagerServer.instance().getOffersManager().reloadOffers(playerMP);
             else if (args[1].equals("-save-offers"))
                 ShopManagerServer.instance().getOffersManager().saveOffers(playerMP);
@@ -35,7 +47,7 @@ public class ShopArgumentOperator implements ArgumentExecutor {
                     if (playerMP.getHeldItemMainhand() == ItemStack.EMPTY) 
                         throw new WrongUsageException("Main hand is empty!");
 
-                    ItemStackWrapper stackWrapper = ItemStackWrapper.getFromStack(playerMP.getHeldItemMainhand());
+                    ItemStackWrapper stackWrapper = ItemStackWrapper.of(playerMP.getHeldItemMainhand());
                     int 
                     amount = CommandBase.parseInt(args[2], 0, Short.MAX_VALUE),
                     discount = CommandBase.parseInt(args[4], 0, 100);
@@ -48,7 +60,7 @@ public class ShopArgumentOperator implements ArgumentExecutor {
                 if (playerMP.getHeldItemMainhand() == ItemStack.EMPTY) 
                     throw new WrongUsageException("Main hand is empty!");
 
-                ItemStackWrapper stackWrapper = ItemStackWrapper.getFromStack(playerMP.getHeldItemMainhand());
+                ItemStackWrapper stackWrapper = ItemStackWrapper.of(playerMP.getHeldItemMainhand());
                 ShopManagerServer.instance().getOffersManager().removeOffer(playerMP, stackWrapper);
             }
         }
