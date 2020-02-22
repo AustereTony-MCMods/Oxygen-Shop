@@ -1,2 +1,6 @@
+0.10.1b [2020-02-22]
++ Fixed command "-oxygenop shop -remove-offer". Now it works properly.
++ Fixed cursor absence if shop menu was opened with command.
+
 0.10.0b [2020-02-21]
 + Initial release.
