@@ -19,8 +19,8 @@ public class ShopConfig extends AbstractConfig {
     SHOP_MENU_OPERATIONS_TIMEOUT_MILLIS = ConfigValueUtils.getValue("server", "shop_menu_operations_timeout_millis", 240000),
     ENABLE_SHOP_ACCESS = ConfigValueUtils.getValue("server", "enable_shop_access", true, true),
     ENABLE_SHOP_ACCESS_CLIENTSIDE = ConfigValueUtils.getValue("server", "enable_shop_access_clientside", true, true),
-    ENABLE_SHOP_MANAGEMENT = ConfigValueUtils.getValue("server", "enable_shop_management", true, true),
-    SHOP_ITEMS_RECEIVING_MODE = ConfigValueUtils.getValue("server", "shop_item_receiving_mode", 0, true),
+    ENABLE_SHOP_MANAGEMENT = ConfigValueUtils.getValue("server", "enable_shop_management", true),
+    SHOP_ITEMS_RECEIVING_MODE = ConfigValueUtils.getValue("server", "shop_item_receiving_mode", 0),
     ADVANCED_LOGGING = ConfigValueUtils.getValue("server", "advanced_logging", false);
 
     @Override

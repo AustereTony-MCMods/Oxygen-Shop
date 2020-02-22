@@ -3,7 +3,7 @@ package austeretony.oxygen_shop.client.gui.menu;
 import austeretony.oxygen_core.client.api.ClientReference;
 import austeretony.oxygen_core.client.api.PrivilegesProviderClient;
 import austeretony.oxygen_core.client.gui.menu.OxygenMenuEntry;
-import austeretony.oxygen_shop.client.ShopManagerClient;
+import austeretony.oxygen_shop.client.ShopMenuManager;
 import austeretony.oxygen_shop.client.settings.EnumShopClientSetting;
 import austeretony.oxygen_shop.common.config.ShopConfig;
 import austeretony.oxygen_shop.common.main.EnumShopPrivilege;
@@ -35,6 +35,6 @@ public class ShopMenuEntry implements OxygenMenuEntry {
 
     @Override
     public void open() {
-        ShopManagerClient.instance().getMenuManager().openShopMenu();
+        ShopMenuManager.openShopMenu();
     }
 }

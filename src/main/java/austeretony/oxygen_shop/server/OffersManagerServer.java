@@ -177,13 +177,16 @@ public class OffersManagerServer {
                 && PrivilegesProviderServer.getAsBoolean(CommonReference.getPersistentUUID(playerMP), EnumShopPrivilege.SHOP_MANAGEMENT.id(), false)) {
             Iterator<ShopOffer> iterator = this.manager.getOffersContainer().getOffers().iterator();
             ShopOffer offer = null;
+            int amount = 0;
             while (iterator.hasNext()) {
                 offer = iterator.next();
-                if (offer.getStackWrapper().equals(stackWrapper))
+                if (offer.getStackWrapper().isEquals(stackWrapper)) {
                     iterator.remove();
+                    amount++;
+                }
             }
 
-            if (offer != null) {
+            if (amount > 0) {
                 this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.OFFER_REMOVED);
                 OxygenMain.LOGGER.info("[Shop] Removed offer <{}>. Player: {}/{}, item: {}.",
                         offer.getId(),

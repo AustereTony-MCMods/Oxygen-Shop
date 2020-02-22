@@ -3,7 +3,7 @@ package austeretony.oxygen_shop.client.input;
 import austeretony.oxygen_core.client.api.ClientReference;
 import austeretony.oxygen_core.client.api.OxygenGUIHelper;
 import austeretony.oxygen_core.client.api.PrivilegesProviderClient;
-import austeretony.oxygen_shop.client.ShopManagerClient;
+import austeretony.oxygen_shop.client.ShopMenuManager;
 import austeretony.oxygen_shop.common.config.ShopConfig;
 import austeretony.oxygen_shop.common.main.EnumShopPrivilege;
 import net.minecraft.client.settings.KeyBinding;
@@ -24,7 +24,7 @@ public class ShopKeyHandler {
         if (this.shopMenuKeybinding != null && this.shopMenuKeybinding.isPressed())
             if (ShopConfig.ENABLE_SHOP_ACCESS_CLIENTSIDE.asBoolean() 
                     && PrivilegesProviderClient.getAsBoolean(EnumShopPrivilege.SHOP_ACCESS.id(), ShopConfig.ENABLE_SHOP_ACCESS.asBoolean()))
-                ShopManagerClient.instance().getMenuManager().openShopMenu();
+                ShopMenuManager.openShopMenu();
     }
 
     public KeyBinding getShopMenuKeybinding() {

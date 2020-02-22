@@ -11,8 +11,12 @@ public class ShopMenuManager {
         this.manager = manager;
     }
 
-    public void openShopMenu() {
+    public static void openShopMenu() {
         ClientReference.displayGuiScreen(new ShopMenuScreen());
+    }
+
+    public static void openShopMenuDelegated() {
+        ClientReference.delegateToClientThread(ShopMenuManager::openShopMenu);
     }
 
     public void offersSynchronized() {

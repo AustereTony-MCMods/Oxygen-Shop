@@ -7,6 +7,7 @@ import austeretony.oxygen_core.client.api.OxygenHelperClient;
 import austeretony.oxygen_core.client.api.PrivilegesProviderClient;
 import austeretony.oxygen_core.common.command.ArgumentExecutor;
 import austeretony.oxygen_shop.client.ShopManagerClient;
+import austeretony.oxygen_shop.client.ShopMenuManager;
 import austeretony.oxygen_shop.common.config.ShopConfig;
 import austeretony.oxygen_shop.common.main.EnumShopPrivilege;
 import net.minecraft.command.CommandException;
@@ -25,16 +26,12 @@ public class ShopArgumentClient implements ArgumentExecutor {
         if (args.length == 1) {
             if (ShopConfig.ENABLE_SHOP_ACCESS_CLIENTSIDE.asBoolean() 
                     && PrivilegesProviderClient.getAsBoolean(EnumShopPrivilege.SHOP_ACCESS.id(), ShopConfig.ENABLE_SHOP_ACCESS.asBoolean()))
-                OxygenHelperClient.scheduleTask(()->this.openShopMenu(), 100L, TimeUnit.MILLISECONDS);
+                OxygenHelperClient.scheduleTask(ShopMenuManager::openShopMenuDelegated, 100L, TimeUnit.MILLISECONDS);
         } else if (args.length == 2) {
             if (args[1].equals("-reset-data")) {
                 ShopManagerClient.instance().getOffersContainer().reset();
                 ClientReference.showChatMessage("oxygen_shop.command.client.dataReset");
             }
         }
-    }
-
-    private void openShopMenu() {
-        ClientReference.delegateToClientThread(()->ShopManagerClient.instance().getMenuManager().openShopMenu());
     }
 }
