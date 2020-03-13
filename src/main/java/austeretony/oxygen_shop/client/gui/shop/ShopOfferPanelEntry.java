@@ -7,14 +7,14 @@ import austeretony.oxygen_core.client.api.EnumBaseClientSetting;
 import austeretony.oxygen_core.client.api.EnumBaseGUISetting;
 import austeretony.oxygen_core.client.currency.CurrencyProperties;
 import austeretony.oxygen_core.client.gui.OxygenGUIUtils;
-import austeretony.oxygen_core.client.gui.elements.OxygenIndexedPanelEntry;
+import austeretony.oxygen_core.client.gui.elements.OxygenWrapperPanelEntry;
 import austeretony.oxygen_core.common.util.OxygenUtils;
 import austeretony.oxygen_shop.common.ShopOffer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
-public class ShopOfferPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
+public class ShopOfferPanelEntry extends OxygenWrapperPanelEntry<ShopOffer> {
 
     private final String amountStr, priceStr, discountStr;
 
@@ -53,13 +53,13 @@ public class ShopOfferPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
         if (this.isVisible()) {      
             RenderHelper.enableGUIStandardItemLighting();            
             GlStateManager.enableDepth();
-            this.itemRender.renderItemAndEffectIntoGUI(this.index.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY());  
+            this.itemRender.renderItemAndEffectIntoGUI(this.wrapped.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY());  
 
             if (this.enableDurabilityBar) {
-                FontRenderer font = this.index.getStackWrapper().getCachedItemStack().getItem().getFontRenderer(this.index.getStackWrapper().getCachedItemStack());
+                FontRenderer font = this.wrapped.getStackWrapper().getCachedItemStack().getItem().getFontRenderer(this.wrapped.getStackWrapper().getCachedItemStack());
                 if (font == null) 
                     font = this.mc.fontRenderer;
-                this.itemRender.renderItemOverlayIntoGUI(font, this.index.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY(), null);
+                this.itemRender.renderItemOverlayIntoGUI(font, this.wrapped.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY(), null);
             }
 
             GlStateManager.disableDepth();
@@ -137,7 +137,7 @@ public class ShopOfferPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
     @Override
     public void drawTooltip(int mouseX, int mouseY) {
         if (mouseX >= this.getX() + 2 && mouseY >= this.getY() && mouseX < this.getX() + 18 && mouseY < this.getY() + this.getHeight())
-            this.screen.drawToolTip(this.index.getStackWrapper().getCachedItemStack(), mouseX + 6, mouseY);
+            this.screen.drawToolTip(this.wrapped.getStackWrapper().getCachedItemStack(), mouseX + 6, mouseY);
     }
 
     public void setPlayerStock(int value) {
@@ -147,9 +147,9 @@ public class ShopOfferPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
     public ShopOfferPanelEntry setAvailable(boolean flag) {
         this.available = flag;
         if (flag)
-            this.setDisplayText(EnumBaseClientSetting.ENABLE_RARITY_COLORS.get().asBoolean() ? (flag ? this.index.getStackWrapper().getCachedItemStack().getRarity().rarityColor : "") + this.index.getStackWrapper().getCachedItemStack().getDisplayName() : this.index.getStackWrapper().getCachedItemStack().getDisplayName());
+            this.setDisplayText(EnumBaseClientSetting.ENABLE_RARITY_COLORS.get().asBoolean() ? (flag ? this.wrapped.getStackWrapper().getCachedItemStack().getRarity().rarityColor : "") + this.wrapped.getStackWrapper().getCachedItemStack().getDisplayName() : this.wrapped.getStackWrapper().getCachedItemStack().getDisplayName());
         else
-            this.setDisplayText(this.index.getStackWrapper().getCachedItemStack().getDisplayName());
+            this.setDisplayText(this.wrapped.getStackWrapper().getCachedItemStack().getDisplayName());
         return this;
     }
 

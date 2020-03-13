@@ -6,7 +6,7 @@ import austeretony.oxygen_core.client.api.ClientReference;
 import austeretony.oxygen_core.client.api.EnumBaseGUISetting;
 import austeretony.oxygen_core.client.gui.elements.OxygenCheckBoxButton;
 import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList;
-import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList.OxygenDropDownListEntry;
+import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList.OxygenDropDownListWrapperEntry;
 import austeretony.oxygen_core.client.gui.elements.OxygenTextLabel;
 import austeretony.oxygen_core.client.gui.settings.ElementsContainer;
 import austeretony.oxygen_core.client.gui.settings.gui.callback.SetColorCallback;
@@ -16,7 +16,7 @@ import austeretony.oxygen_core.client.gui.settings.gui.callback.SetScaleCallback
 import austeretony.oxygen_shop.client.settings.EnumShopClientSetting;
 import austeretony.oxygen_shop.client.settings.gui.EnumShopGUISetting;
 
-public class TradeSettingsContainer implements ElementsContainer {
+public class ShopSettingsContainer implements ElementsContainer {
 
     //common
 
@@ -79,12 +79,12 @@ public class TradeSettingsContainer implements ElementsContainer {
             break;
         }
         framework.addElement(this.alignmentShopMenu = new OxygenDropDownList(68, 35, 55, currAlignmentStr));
-        this.alignmentShopMenu.addElement(new OxygenDropDownListEntry<Integer>(- 1, ClientReference.localize("oxygen_core.alignment.left")));
-        this.alignmentShopMenu.addElement(new OxygenDropDownListEntry<Integer>(0, ClientReference.localize("oxygen_core.alignment.center")));
-        this.alignmentShopMenu.addElement(new OxygenDropDownListEntry<Integer>(1, ClientReference.localize("oxygen_core.alignment.right")));
+        this.alignmentShopMenu.addElement(new OxygenDropDownListWrapperEntry<Integer>(- 1, ClientReference.localize("oxygen_core.alignment.left")));
+        this.alignmentShopMenu.addElement(new OxygenDropDownListWrapperEntry<Integer>(0, ClientReference.localize("oxygen_core.alignment.center")));
+        this.alignmentShopMenu.addElement(new OxygenDropDownListWrapperEntry<Integer>(1, ClientReference.localize("oxygen_core.alignment.right")));
 
-        this.alignmentShopMenu.<OxygenDropDownListEntry<Integer>>setClickListener((element)->{
-            EnumShopGUISetting.SHOP_MENU_ALIGNMENT.get().setValue(String.valueOf(element.index));
+        this.alignmentShopMenu.<OxygenDropDownListWrapperEntry<Integer>>setElementClickListener((element)->{
+            EnumShopGUISetting.SHOP_MENU_ALIGNMENT.get().setValue(String.valueOf(element.getWrapped()));
             OxygenManagerClient.instance().getClientSettingManager().changed();
         });
 

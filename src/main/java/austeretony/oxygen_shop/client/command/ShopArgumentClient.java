@@ -1,6 +1,10 @@
 package austeretony.oxygen_shop.client.command;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import austeretony.oxygen_core.client.api.ClientReference;
 import austeretony.oxygen_core.client.api.OxygenHelperClient;
@@ -10,9 +14,11 @@ import austeretony.oxygen_shop.client.ShopManagerClient;
 import austeretony.oxygen_shop.client.ShopMenuManager;
 import austeretony.oxygen_shop.common.config.ShopConfig;
 import austeretony.oxygen_shop.common.main.EnumShopPrivilege;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 public class ShopArgumentClient implements ArgumentExecutor {
 
@@ -33,5 +39,12 @@ public class ShopArgumentClient implements ArgumentExecutor {
                 ClientReference.showChatMessage("oxygen_shop.command.client.dataReset");
             }
         }
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length == 2)
+            return CommandBase.getListOfStringsMatchingLastWord(args, "-reset-data");
+        return Collections.<String>emptyList();
     }
 }

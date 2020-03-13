@@ -19,9 +19,8 @@ import austeretony.oxygen_core.server.api.OxygenHelperServer;
 import austeretony.oxygen_core.server.api.PrivilegesProviderServer;
 import austeretony.oxygen_core.server.api.SoundEventHelperServer;
 import austeretony.oxygen_core.server.api.TimeHelperServer;
-import austeretony.oxygen_mail.common.Parcel;
-import austeretony.oxygen_mail.server.MailManagerServer;
-import austeretony.oxygen_mail.server.Mailbox;
+import austeretony.oxygen_mail.common.mail.Attachments;
+import austeretony.oxygen_mail.common.mail.EnumMail;
 import austeretony.oxygen_mail.server.api.MailHelperServer;
 import austeretony.oxygen_shop.common.ShopOffer;
 import austeretony.oxygen_shop.common.config.ShopConfig;
@@ -44,19 +43,15 @@ public class OffersManagerServer {
         if (ShopConfig.ENABLE_SHOP_ACCESS_CLIENTSIDE.asBoolean() || OxygenHelperServer.checkTimeOut(playerUUID, ShopMain.SHOP_MENU_TIMEOUT_ID)) {
             if (PrivilegesProviderServer.getAsBoolean(playerUUID, EnumShopPrivilege.SHOP_ACCESS.id(), ShopConfig.ENABLE_SHOP_ACCESS.asBoolean())) {
 
-                if (ShopConfig.SHOP_ITEMS_RECEIVING_MODE.asInt() == 0) {//mail
-                    Mailbox mailbox = MailManagerServer.instance().getMailboxesContainer().getPlayerMailbox(playerUUID);
-                    int emptySlots = mailbox.getMaxCapacity() - mailbox.getMessagesAmount();
-                    if (emptySlots < offerIds.length) {
-                        this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.MAILBOX_FULL);
-                        return;
-                    }
-                } else {//inventory
-                    int emptySlots = InventoryProviderServer.getPlayerInventory().getEmptySlotsAmount(playerMP);
-                    if (emptySlots < offerIds.length) {
-                        this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.INVENTORY_FULL);
-                        return;
-                    }
+                int emptySlots = 0;
+                if (ShopConfig.SHOP_ITEMS_RECEIVING_MODE.asInt() == 0)
+                    emptySlots = MailHelperServer.getPlayerMailboxFreeSpace(playerUUID);
+                else
+                    emptySlots = InventoryProviderServer.getPlayerInventory().getEmptySlotsAmount(playerMP);
+
+                if (emptySlots < offerIds.length) {
+                    OxygenManagerServer.instance().sendStatusMessage(playerMP, ShopConfig.SHOP_ITEMS_RECEIVING_MODE.asInt() == 0 ? EnumOxygenStatusMessage.MAILBOX_FULL : EnumOxygenStatusMessage.INVENTORY_FULL);
+                    return;
                 }
 
                 ShopOffer[] offers = new ShopOffer[offerIds.length];
@@ -81,34 +76,39 @@ public class OffersManagerServer {
                         final int itemAmount = shopOffer.getAmount() * amount[index++];
 
                         if (ShopConfig.SHOP_ITEMS_RECEIVING_MODE.asInt() == 0)//mail
-                            MailHelperServer.sendSystemPackage(
+                            MailHelperServer.sendSystemMail(
                                     playerUUID, 
-                                    "mail.sender.sys", 
+                                    "mail.sender.shop", 
+                                    EnumMail.PARCEL,
                                     "shop.purchased", 
-                                    "shop.purchasedItemMessage", 
-                                    Parcel.create(shopOffer.getStackWrapper(), itemAmount), 
-                                    true);
-                        else//inventory
-                            InventoryProviderServer.getPlayerInventory().addItem(playerMP, shopOffer.getStackWrapper(), itemAmount);
+                                    Attachments.parcel(shopOffer.getStackWrapper(), itemAmount), 
+                                    true,
+                                    "shop.purchasedItemMessage",
+                                    String.valueOf(itemAmount),
+                                    shopOffer.getStackWrapper().getCachedItemStack().getDisplayName());
+                        else {//inventory
+                            InventoryProviderServer.getPlayerInventory().addItem(playerMP, shopOffer.getStackWrapper(), itemAmount);          
+                            SoundEventHelperServer.playSoundClient(playerMP, OxygenSoundEffects.INVENTORY_OPERATION.getId());
+                        }
 
                         if (ShopConfig.ADVANCED_LOGGING.asBoolean())
                             OxygenMain.LOGGER.info("[Shop] Player purchased an item. Player: {}/{}, offer id: {}, item: {}, amount: {}, total price: {}.",
                                     CommonReference.getName(playerMP),
                                     CommonReference.getPersistentUUID(playerMP),
                                     shopOffer.getId(),
-                                    shopOffer.getStackWrapper().registryName,
+                                    shopOffer.getStackWrapper().getRegistryName(),
                                     itemAmount,
                                     itemAmount * shopOffer.getPrice());
                     }
 
-                    SoundEventHelperServer.playSoundClient(playerMP, OxygenSoundEffects.SELL.id);
+                    SoundEventHelperServer.playSoundClient(playerMP, OxygenSoundEffects.RINGING_COINS.getId());
 
                     OxygenMain.network().sendTo(
                             new CPPurchaseSuccessful(
                                     CurrencyHelperServer.getCurrency(playerUUID, ShopConfig.SHOP_CURRENCY_INDEX.asInt()),
                                     offerIds.length == 1 ? offerIds[0] : 0L),
                             playerMP);
-                    this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.PURCHASE_SUCCESSFUL);
+                    this.manager.sendStatusMessage(playerMP, ShopConfig.SHOP_ITEMS_RECEIVING_MODE.asInt() == 0 ? EnumShopStatusMessage.PURCHASE_SUCCESSFUL_MAIL : EnumShopStatusMessage.PURCHASE_SUCCESSFUL);
                 }
             } else
                 this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.PURCHASE_FAILED);
@@ -119,8 +119,7 @@ public class OffersManagerServer {
     //management
 
     public void reloadOffers(@Nullable EntityPlayerMP playerMP) {
-        if (playerMP == null || (ShopConfig.ENABLE_SHOP_MANAGEMENT.asBoolean() 
-                && PrivilegesProviderServer.getAsBoolean(CommonReference.getPersistentUUID(playerMP), EnumShopPrivilege.SHOP_MANAGEMENT.id(), false)))
+        if (ShopConfig.ENABLE_SHOP_MANAGEMENT_INGAME.asBoolean())
             OxygenHelperServer.addRoutineTask(()->this.reload(playerMP));
     }
 
@@ -140,8 +139,7 @@ public class OffersManagerServer {
     }
 
     public void saveOffers(@Nullable EntityPlayerMP playerMP) {
-        if (playerMP == null || (ShopConfig.ENABLE_SHOP_MANAGEMENT.asBoolean() 
-                && PrivilegesProviderServer.getAsBoolean(CommonReference.getPersistentUUID(playerMP), EnumShopPrivilege.SHOP_MANAGEMENT.id(), false))) {
+        if (ShopConfig.ENABLE_SHOP_MANAGEMENT_INGAME.asBoolean()) {
             this.manager.getOffersContainer().saveAsync();
             if (playerMP != null)
                 this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.OFFERS_SAVED);
@@ -150,8 +148,7 @@ public class OffersManagerServer {
     }
 
     public void createOffer(EntityPlayerMP playerMP, ItemStackWrapper stackWrapper, int amount, long price, int discount) {
-        if (ShopConfig.ENABLE_SHOP_MANAGEMENT.asBoolean() 
-                && PrivilegesProviderServer.getAsBoolean(CommonReference.getPersistentUUID(playerMP), EnumShopPrivilege.SHOP_MANAGEMENT.id(), false)) {
+        if (ShopConfig.ENABLE_SHOP_MANAGEMENT_INGAME.asBoolean()) {
             ShopOffer offer = new ShopOffer(
                     TimeHelperServer.getCurrentMillis(),
                     stackWrapper,
@@ -161,39 +158,40 @@ public class OffersManagerServer {
             this.manager.getOffersContainer().addOffer(offer);
 
             this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.OFFER_CREATED);
-            OxygenMain.LOGGER.info("[Shop] Created offer <{}>. Player: {}/{}, item: {}, amount: {}, price: {}, discount: {}%.",
-                    offer.getId(),
-                    CommonReference.getName(playerMP),
-                    CommonReference.getPersistentUUID(playerMP),
-                    stackWrapper.registryName,
-                    amount,
-                    price,
-                    discount);
+
+            if (ShopConfig.ADVANCED_LOGGING.asBoolean())
+                OxygenMain.LOGGER.info("[Shop] Created offer <{}>. Player: {}/{}, item: {}, amount: {}, price: {}, discount: {}%.",
+                        offer.getId(),
+                        CommonReference.getName(playerMP),
+                        CommonReference.getPersistentUUID(playerMP),
+                        stackWrapper.getRegistryName(),
+                        amount,
+                        price,
+                        discount);
         }
     }
 
     public void removeOffer(EntityPlayerMP playerMP, ItemStackWrapper stackWrapper) {
-        if (ShopConfig.ENABLE_SHOP_MANAGEMENT.asBoolean() 
-                && PrivilegesProviderServer.getAsBoolean(CommonReference.getPersistentUUID(playerMP), EnumShopPrivilege.SHOP_MANAGEMENT.id(), false)) {
+        if (ShopConfig.ENABLE_SHOP_MANAGEMENT_INGAME.asBoolean()) {
             Iterator<ShopOffer> iterator = this.manager.getOffersContainer().getOffers().iterator();
             ShopOffer offer = null;
-            int amount = 0;
+            boolean removed = false;
             while (iterator.hasNext()) {
                 offer = iterator.next();
                 if (offer.getStackWrapper().isEquals(stackWrapper)) {
                     iterator.remove();
-                    amount++;
+
+                    if (ShopConfig.ADVANCED_LOGGING.asBoolean())
+                        OxygenMain.LOGGER.info("[Shop] Removed offer <{}>. Player: {}/{}, item: {}.",
+                                offer.getId(),
+                                CommonReference.getName(playerMP),
+                                CommonReference.getPersistentUUID(playerMP),
+                                stackWrapper.getRegistryName());
+                    removed = true;
                 }
             }
-
-            if (amount > 0) {
+            if (removed)
                 this.manager.sendStatusMessage(playerMP, EnumShopStatusMessage.OFFER_REMOVED);
-                OxygenMain.LOGGER.info("[Shop] Removed offer <{}>. Player: {}/{}, item: {}.",
-                        offer.getId(),
-                        CommonReference.getName(playerMP),
-                        CommonReference.getPersistentUUID(playerMP),
-                        stackWrapper.registryName);
-            }
         }
     }
 }

@@ -46,7 +46,7 @@ public class OffersContainerClient extends AbstractPersistentData {
 
     @Override
     public String getDisplayName() {
-        return "shop_data";
+        return "shop:shop_data_client";
     }
 
     @Override

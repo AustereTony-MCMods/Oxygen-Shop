@@ -47,6 +47,10 @@ public class ShoppingCartManagerClient {
         return amount;
     }
 
+    public void setItemAmount(long offerId, int amount) {
+        this.cart.put(offerId, amount);
+    }
+
     public void purchaseItem(long offerId) {
         if (this.cart.containsKey(offerId))
             OxygenMain.network().sendToServer(new SPPurchaseItems(new long[]{offerId}, new int[]{this.cart.get(offerId)}));

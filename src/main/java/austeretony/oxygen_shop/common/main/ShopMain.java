@@ -8,6 +8,7 @@ import austeretony.oxygen_core.common.api.CommonReference;
 import austeretony.oxygen_core.common.api.OxygenHelperCommon;
 import austeretony.oxygen_core.common.main.OxygenMain;
 import austeretony.oxygen_core.common.privilege.PrivilegeUtils;
+import austeretony.oxygen_core.server.OxygenManagerServer;
 import austeretony.oxygen_core.server.api.OxygenHelperServer;
 import austeretony.oxygen_core.server.api.PrivilegesProviderServer;
 import austeretony.oxygen_core.server.command.CommandOxygenOperator;
@@ -18,7 +19,7 @@ import austeretony.oxygen_shop.client.ShopManagerClient;
 import austeretony.oxygen_shop.client.ShopStatusMessagesHandler;
 import austeretony.oxygen_shop.client.command.ShopArgumentClient;
 import austeretony.oxygen_shop.client.event.ShopEventsClient;
-import austeretony.oxygen_shop.client.gui.settings.TradeSettingsContainer;
+import austeretony.oxygen_shop.client.gui.settings.ShopSettingsContainer;
 import austeretony.oxygen_shop.client.gui.shop.ShopMenuScreen;
 import austeretony.oxygen_shop.client.settings.EnumShopClientSetting;
 import austeretony.oxygen_shop.client.settings.gui.EnumShopGUISetting;
@@ -40,7 +41,7 @@ import net.minecraftforge.fml.relauncher.Side;
         modid = ShopMain.MODID, 
         name = ShopMain.NAME, 
         version = ShopMain.VERSION,
-        dependencies = "required-after:oxygen_core@[0.10.3,);after:oxygen_mail@[0.10.1,);",
+        dependencies = "required-after:oxygen_core@[0.11.0,);after:oxygen_mail@[0.11.0,);",
         certificateFingerprint = "@FINGERPRINT@",
         updateJSON = ShopMain.VERSIONS_FORGE_URL)
 public class ShopMain {
@@ -48,7 +49,7 @@ public class ShopMain {
     public static final String 
     MODID = "oxygen_shop",    
     NAME = "Oxygen: Shop",
-    VERSION = "0.10.1",
+    VERSION = "0.11.0",
     VERSION_CUSTOM = VERSION + ":beta:0",
     GAME_VERSION = "1.12.2",
     VERSIONS_FORGE_URL = "https://raw.githubusercontent.com/AustereTony-MCMods/Oxygen-Shop/info/mod_versions_forge.json";
@@ -89,15 +90,14 @@ public class ShopMain {
             OxygenHelperClient.registerDataSyncHandler(new OffersSyncHandlerClient());
             EnumShopClientSetting.register();
             EnumShopGUISetting.register();
-            SettingsScreen.registerSettingsContainer(new TradeSettingsContainer());
+            SettingsScreen.registerSettingsContainer(new ShopSettingsContainer());
         }
     }
 
     public static void addDefaultPrivileges() {
         if (PrivilegesProviderServer.getRole(OxygenMain.OPERATOR_ROLE_ID).getPrivilege(EnumShopPrivilege.SHOP_ACCESS.id()) == null) {
-            PrivilegesProviderServer.getRole(OxygenMain.OPERATOR_ROLE_ID).addPrivileges(
-                    PrivilegeUtils.getPrivilege(EnumShopPrivilege.SHOP_ACCESS.id(), true),
-                    PrivilegeUtils.getPrivilege(EnumShopPrivilege.SHOP_MANAGEMENT.id(), true));
+            PrivilegesProviderServer.getRole(OxygenMain.OPERATOR_ROLE_ID).addPrivilege(PrivilegeUtils.getPrivilege(EnumShopPrivilege.SHOP_ACCESS.id(), true));
+            OxygenManagerServer.instance().getPrivilegesContainer().markChanged();
             OxygenMain.LOGGER.info("[Shop] Default Operator role privileges added.");
         }
     }

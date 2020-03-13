@@ -8,8 +8,9 @@ import austeretony.oxygen_core.client.api.WatcherHelperClient;
 import austeretony.oxygen_core.client.currency.CurrencyProperties;
 import austeretony.oxygen_core.client.gui.OxygenGUITextures;
 import austeretony.oxygen_core.client.gui.OxygenGUIUtils;
-import austeretony.oxygen_core.client.gui.elements.OxygenIndexedPanelEntry;
+import austeretony.oxygen_core.client.gui.elements.OxygenNumberField;
 import austeretony.oxygen_core.client.gui.elements.OxygenTexturedButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenWrapperPanelEntry;
 import austeretony.oxygen_core.common.util.OxygenUtils;
 import austeretony.oxygen_shop.client.ShopManagerClient;
 import austeretony.oxygen_shop.common.ShopOffer;
@@ -17,17 +18,19 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
-public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
+public class CartPanelEntry extends OxygenWrapperPanelEntry<ShopOffer> {
 
-    private final String amountStr, priceStr;
+    private final String amountStr, cartItemAmountStr, priceStr;
 
-    private String playerStockStr, cartItemAmountStr, totalPriceStr;
+    private String playerStockStr, totalPriceStr;
 
     private final boolean singleItem, enableDurabilityBar;
 
     private boolean available, remove;
 
     private final CurrencyProperties currencyProperties;
+
+    private OxygenNumberField cartItemAmountField;
 
     private OxygenTexturedButton decrementButton, incrementButton, removeButton, purchaseButton;
 
@@ -55,10 +58,12 @@ public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
 
     @Override
     public void init() {
-        this.decrementButton = new OxygenTexturedButton(25, 11, 4, 4, ShopMenuScreen.MINUS_ICONS, 4, 4, "").initScreen(this.getScreen());
-        this.incrementButton = new OxygenTexturedButton(42, 11, 4, 4, ShopMenuScreen.PLUS_ICONS, 4, 4, "").initScreen(this.getScreen());
-        this.removeButton = new OxygenTexturedButton(this.getWidth() - 8, 1, 5, 5, OxygenGUITextures.CROSS_ICONS, 5, 5, "").initScreen(this.getScreen());
-        this.purchaseButton = new OxygenTexturedButton(this.getWidth() - 8, 10, 5, 5, OxygenGUITextures.CHECK_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.cartItemAmountField = (OxygenNumberField) new OxygenNumberField(31, 9, 15, this.cartItemAmountStr, Short.MAX_VALUE, false, 0, true).initScreen(this.getScreen());
+
+        this.decrementButton = new OxygenTexturedButton(25, 11, 5, 5, OxygenGUITextures.MINUS_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.incrementButton = new OxygenTexturedButton(47, 11, 5, 5, OxygenGUITextures.PLUS_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.removeButton = new OxygenTexturedButton(this.getWidth() - 7, 1, 5, 5, OxygenGUITextures.CROSS_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.purchaseButton = new OxygenTexturedButton(this.getWidth() - 7, 10, 5, 5, OxygenGUITextures.CHECK_ICONS, 5, 5, "").initScreen(this.getScreen());
 
         this.purchaseButton.setEnabled(this.available);
     }
@@ -66,8 +71,6 @@ public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
     @Override
     public void draw(int mouseX, int mouseY) {
         if (this.isVisible()) {      
-            ///
-
             GlStateManager.pushMatrix();           
             GlStateManager.translate(this.getX(), this.getY(), 0.0F);            
             GlStateManager.scale(this.getScale(), this.getScale(), 0.0F);
@@ -87,17 +90,15 @@ public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
 
             GlStateManager.popMatrix();
 
-            ///
-
             RenderHelper.enableGUIStandardItemLighting();            
             GlStateManager.enableDepth();
-            this.itemRender.renderItemAndEffectIntoGUI(this.index.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY());  
+            this.itemRender.renderItemAndEffectIntoGUI(this.wrapped.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY());  
 
             if (this.enableDurabilityBar) {
-                FontRenderer font = this.index.getStackWrapper().getCachedItemStack().getItem().getFontRenderer(this.index.getStackWrapper().getCachedItemStack());
+                FontRenderer font = this.wrapped.getStackWrapper().getCachedItemStack().getItem().getFontRenderer(this.wrapped.getStackWrapper().getCachedItemStack());
                 if (font == null) 
                     font = this.mc.fontRenderer;
-                this.itemRender.renderItemOverlayIntoGUI(font, this.index.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY(), null);
+                this.itemRender.renderItemOverlayIntoGUI(font, this.wrapped.getStackWrapper().getCachedItemStack(), this.getX() + 2, this.getY(), null);
             }
 
             GlStateManager.disableDepth();
@@ -147,16 +148,12 @@ public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(35.0F - this.textWidth(this.cartItemAmountStr, this.getTextScale() - 0.3F), 11.0F, 0.0F);            
-            GlStateManager.scale(this.getTextScale() - 0.05F, this.getTextScale() - 0.05F, 0.0F); 
-            this.mc.fontRenderer.drawString(this.cartItemAmountStr, 0, 0, this.available ? color : this.getDebugColor(), false);
-            GlStateManager.popMatrix();   
-
-            GlStateManager.pushMatrix();           
-            GlStateManager.translate(50.0F, 11.0F, 0.0F);            
+            GlStateManager.translate(56.0F, 11.0F, 0.0F);            
             GlStateManager.scale(this.getTextScale() - 0.05F, this.getTextScale() - 0.05F, 0.0F); 
             this.mc.fontRenderer.drawString(this.totalPriceStr, 0, 0, this.available ? color : this.getDebugColor(), false);
             GlStateManager.popMatrix();   
+
+            this.cartItemAmountField.draw(mouseX, mouseY);
 
             this.decrementButton.draw(mouseX, mouseY);
             this.incrementButton.draw(mouseX, mouseY);
@@ -170,47 +167,64 @@ public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
     @Override
     public void drawTooltip(int mouseX, int mouseY) {
         if (mouseX >= this.getX() + 2 && mouseY >= this.getY() && mouseX < this.getX() + 18 && mouseY < this.getY() + this.getHeight())
-            this.screen.drawToolTip(this.index.getStackWrapper().getCachedItemStack(), mouseX + 6, mouseY);
+            this.screen.drawToolTip(this.wrapped.getStackWrapper().getCachedItemStack(), mouseX + 6, mouseY);
     }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {       
         if (this.decrementButton.mouseClicked(mouseX, mouseY, mouseButton)) {
-            int amount = ShopManagerClient.instance().getShoppingCartManager().decrementItemAmount(this.index.getId());
-            this.cartItemAmountStr = String.valueOf(amount);
-
-            this.totalPrice = this.index.getPrice() * amount;
-            this.totalPriceStr = OxygenUtils.formatCurrencyValue(String.valueOf(this.totalPrice));
-            this.available = this.totalPrice <= WatcherHelperClient.getLong(this.currencyProperties.getIndex());
-            this.purchaseButton.setEnabled(this.available);
-
-            ((ShopSection) this.screen.getWorkspace().getCurrentSection()).updateTotalCartPrice();
+            int amount = ShopManagerClient.instance().getShoppingCartManager().decrementItemAmount(this.wrapped.getId());
+            this.cartItemAmountField.setText(String.valueOf(amount));
+            this.updateState(amount);
         } else if (this.incrementButton.mouseClicked(mouseX, mouseY, mouseButton)) {
-            int amount = ShopManagerClient.instance().getShoppingCartManager().incrementItemAmount(this.index.getId());
-            this.cartItemAmountStr = String.valueOf(amount);
-
-            this.totalPrice = this.index.getPrice() * amount;
-            this.totalPriceStr = OxygenUtils.formatCurrencyValue(String.valueOf(this.totalPrice));
-            this.available = this.totalPrice <= WatcherHelperClient.getLong(this.currencyProperties.getIndex());
-            this.purchaseButton.setEnabled(this.available);
-
-            ((ShopSection) this.screen.getWorkspace().getCurrentSection()).updateTotalCartPrice();
+            int amount = ShopManagerClient.instance().getShoppingCartManager().incrementItemAmount(this.wrapped.getId());            
+            this.cartItemAmountField.setText(String.valueOf(amount));
+            this.updateState(amount);
         } else if (this.removeButton.mouseClicked(mouseX, mouseY, mouseButton)) {
-            ShopManagerClient.instance().getShoppingCartManager().removeItemFromCart(this.index.getId());
+            ShopManagerClient.instance().getShoppingCartManager().removeItemFromCart(this.wrapped.getId());
             this.remove = true;
         } else if (this.purchaseButton.mouseClicked(mouseX, mouseY, mouseButton))
-            ShopManagerClient.instance().getShoppingCartManager().purchaseItem(this.index.getId());
+            ShopManagerClient.instance().getShoppingCartManager().purchaseItem(this.wrapped.getId());
+        this.cartItemAmountField.mouseClicked(mouseX, mouseY, mouseButton);
         return false;
     }
 
     @Override
     public void mouseOver(int mouseX, int mouseY) {
+        this.cartItemAmountField.mouseOver(mouseX - this.getX(), mouseY - this.getY());
+
         this.decrementButton.mouseOver(mouseX - this.getX(), mouseY - this.getY());
         this.incrementButton.mouseOver(mouseX - this.getX(), mouseY - this.getY());
         this.removeButton.mouseOver(mouseX - this.getX(), mouseY - this.getY());
         this.purchaseButton.mouseOver(mouseX - this.getX(), mouseY - this.getY());
 
         this.setHovered(this.isEnabled() && mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.getWidth() && mouseY < this.getY() + this.getHeight());   
+    }
+
+    @Override
+    public boolean keyTyped(char keyChar, int keyCode) {
+        if (this.cartItemAmountField.keyTyped(keyChar, keyCode)) {
+            int amount = (int) this.cartItemAmountField.getTypedNumberAsLong();
+            if (amount == 0)
+                amount = 1;
+            ShopManagerClient.instance().getShoppingCartManager().setItemAmount(this.wrapped.getId(), amount);
+            this.updateState(amount);
+        }
+        return false;
+    }
+
+    @Override
+    public void updateCursorCounter() {
+        this.cartItemAmountField.updateCursorCounter();
+    }
+
+    private void updateState(int cartItemAmount) {
+        this.totalPrice = this.wrapped.getPrice() * cartItemAmount;
+        this.totalPriceStr = OxygenUtils.formatCurrencyValue(String.valueOf(this.totalPrice));
+        this.available = this.totalPrice <= WatcherHelperClient.getLong(this.currencyProperties.getIndex());
+        this.purchaseButton.setEnabled(this.available);
+
+        ((ShopSection) this.screen.getWorkspace().getCurrentSection()).updateTotalCartPrice();
     }
 
     public void setPlayerStock(int value) {
@@ -220,9 +234,9 @@ public class CartPanelEntry extends OxygenIndexedPanelEntry<ShopOffer> {
     public void setAvailable(boolean flag) {
         this.available = flag;
         if (flag)
-            this.setDisplayText(EnumBaseClientSetting.ENABLE_RARITY_COLORS.get().asBoolean() ? (flag ? this.index.getStackWrapper().getCachedItemStack().getRarity().rarityColor : "") + this.index.getStackWrapper().getCachedItemStack().getDisplayName() : this.index.getStackWrapper().getCachedItemStack().getDisplayName());
+            this.setDisplayText(EnumBaseClientSetting.ENABLE_RARITY_COLORS.get().asBoolean() ? (flag ? this.wrapped.getStackWrapper().getCachedItemStack().getRarity().rarityColor : "") + this.wrapped.getStackWrapper().getCachedItemStack().getDisplayName() : this.wrapped.getStackWrapper().getCachedItemStack().getDisplayName());
         else
-            this.setDisplayText(this.index.getStackWrapper().getCachedItemStack().getDisplayName());
+            this.setDisplayText(this.wrapped.getStackWrapper().getCachedItemStack().getDisplayName());
     }
 
     public boolean isAvailable() {

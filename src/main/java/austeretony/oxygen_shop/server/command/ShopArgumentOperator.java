@@ -1,5 +1,10 @@
 package austeretony.oxygen_shop.server.command;
 
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import austeretony.oxygen_core.common.api.CommonReference;
 import austeretony.oxygen_core.common.command.ArgumentExecutor;
 import austeretony.oxygen_core.common.item.ItemStackWrapper;
@@ -15,6 +20,7 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 public class ShopArgumentOperator implements ArgumentExecutor {
 
@@ -64,5 +70,12 @@ public class ShopArgumentOperator implements ArgumentExecutor {
                 ShopManagerServer.instance().getOffersManager().removeOffer(playerMP, stackWrapper);
             }
         }
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length == 2)
+            return CommandBase.getListOfStringsMatchingLastWord(args, "-open-menu", "-reload-offers", "-save-offers", "-create-offer", "-remove-offer");
+        return Collections.<String>emptyList();
     }
 }

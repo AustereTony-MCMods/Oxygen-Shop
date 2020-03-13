@@ -16,6 +16,7 @@ oxygen_shop.gui.shop.tooltip.resetFilters=Сброс
 oxygen_shop.gui.shop.offer.discount=Скидка %s
 
 oxygen_shop.status.message.purchaseSuccessful=Покупка совершена
+oxygen_shop.status.message.purchaseSuccessfulMail=Покупка совершена. Проверить почту: 
 oxygen_shop.status.message.purchaseFailed=Покупка не совершена
 oxygen_shop.status.message.offersReloaded=Сделки перезагружены
 oxygen_shop.status.message.offersSaved=Сделки сохранены
@@ -23,10 +24,10 @@ oxygen_shop.status.message.offerCreated=Сделка создана
 oxygen_shop.status.message.offerCreationFailed=Сбой при создании сделки
 oxygen_shop.status.message.offerRemoved=Сделка удалена
 
-oxygen_shop.status.message.inventoryFull=Инвентарь заполнен
-oxygen_shop.status.message.mailboxFull=Почтовый ящик заполнен
+oxygen_shop.message.clickHere=кликнуть здесь
 
+mail.sender.shop=Магазин
 shop.purchased=Магазин: Покупка
-shop.purchasedItemMessage=Вы приобрели предмет в магазине.
+shop.purchasedItemMessage=Вы приобрели <§f%s§rx§f%s§r>.
 
 oxygen_shop.command.client.dataReset=Данные клиента для Oxygen Shop сброшены.

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -48,7 +47,7 @@ public class OffersContainerServer {
     }
 
     public Future<?> loadAsync() {
-        return OxygenHelperServer.getExecutionManager().addIOTask(this::load);
+        return OxygenHelperServer.addIOTask(this::load);
     }
 
     private void load() {
@@ -72,7 +71,7 @@ public class OffersContainerServer {
     }
 
     public Future<?> saveAsync() {
-        return OxygenHelperServer.getExecutionManager().addIOTask(this::save);
+        return OxygenHelperServer.addIOTask(this::save);
     }
 
     private void save() {
@@ -83,11 +82,10 @@ public class OffersContainerServer {
                 Files.createDirectory(path.getParent());
 
             JsonArray offersArray = new JsonArray();
-            for (ShopOffer offer : this.offers.values().stream()
-                    .sorted((o1, o2)->o1.getStackWrapper().registryName.compareTo(o2.getStackWrapper().registryName))
-                    .collect(Collectors.toList())) {
-                offersArray.add(offer.toJson());
-            }
+            this.offers.values().stream()
+            .sorted((o1, o2)->o1.getStackWrapper().getRegistryName().compareTo(o2.getStackWrapper().getRegistryName()))
+            .forEach((offer)->offersArray.add(offer.toJson()));
+
             JsonUtils.createExternalJsonFile(pathStr, offersArray);
         } catch (IOException exception) {
             OxygenMain.LOGGER.error("[Shop] Failed to save shop offers.");

@@ -13,23 +13,19 @@ import austeretony.oxygen_core.client.api.OxygenHelperClient;
 import austeretony.oxygen_core.client.currency.CurrencyProperties;
 import austeretony.oxygen_core.client.gui.menu.OxygenMenuEntry;
 import austeretony.oxygen_core.common.item.ItemStackWrapper;
+import austeretony.oxygen_core.common.main.OxygenMain;
 import austeretony.oxygen_shop.client.gui.menu.ShopMenuEntry;
 import austeretony.oxygen_shop.client.settings.gui.EnumShopGUISetting;
 import austeretony.oxygen_shop.common.config.ShopConfig;
 import austeretony.oxygen_shop.common.main.ShopMain;
-import net.minecraft.util.ResourceLocation;
 
 public class ShopMenuScreen extends AbstractGUIScreen {
 
-    public static final ResourceLocation 
-    PLUS_ICONS = new ResourceLocation(ShopMain.MODID, "textures/gui/plus_icons.png"),
-    MINUS_ICONS = new ResourceLocation(ShopMain.MODID, "textures/gui/minus_icons.png");
-
     public static final OxygenMenuEntry SHOP_MENU_ENTRY = new ShopMenuEntry();
 
-    public final CurrencyProperties currencyProperties;
+    private CurrencyProperties currencyProperties;
 
-    public final Map<ItemStackWrapper, Integer> inventoryContent;
+    private final Map<ItemStackWrapper, Integer> inventoryContent;
 
     private ShopSection shopSection;
 
@@ -37,6 +33,8 @@ public class ShopMenuScreen extends AbstractGUIScreen {
         OxygenHelperClient.syncData(ShopMain.SHOP_OFFERS_DATA_ID);
 
         this.currencyProperties = OxygenHelperClient.getCurrencyProperties(ShopConfig.SHOP_CURRENCY_INDEX.asInt());
+        if (this.currencyProperties == null)
+            this.currencyProperties = OxygenHelperClient.getCurrencyProperties(OxygenMain.COMMON_CURRENCY_INDEX);
         this.inventoryContent = InventoryProviderClient.getPlayerInventory().getInventoryContent(ClientReference.getClientPlayer());
     }
 
@@ -57,7 +55,7 @@ public class ShopMenuScreen extends AbstractGUIScreen {
             alignment = EnumGUIAlignment.CENTER;
             break;
         }
-        return new GUIWorkspace(this, 313, 197).setAlignment(alignment, 0, 0);
+        return new GUIWorkspace(this, 323, 197).setAlignment(alignment, 0, 0);
     }
 
     @Override
@@ -84,6 +82,10 @@ public class ShopMenuScreen extends AbstractGUIScreen {
 
     public void purchaseSuccessful(long balance, long offerId) {
         this.shopSection.purchaseSuccessful(balance, offerId);
+    }
+
+    public CurrencyProperties getCurrencyProperties() {
+        return this.currencyProperties;
     }
 
     public int getEqualStackAmount(ItemStackWrapper stackWrapper) {

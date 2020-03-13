@@ -16,11 +16,12 @@ import austeretony.oxygen_core.client.api.EnumBaseGUISetting;
 import austeretony.oxygen_core.client.api.OxygenGUIHelper;
 import austeretony.oxygen_core.client.api.WatcherHelperClient;
 import austeretony.oxygen_core.client.gui.OxygenGUITextures;
-import austeretony.oxygen_core.client.gui.elements.OxygenButton;
 import austeretony.oxygen_core.client.gui.elements.OxygenCurrencyValue;
+import austeretony.oxygen_core.client.gui.elements.OxygenDefaultBackgroundWithButtonsUnderlinedFiller;
 import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList;
-import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList.OxygenDropDownListEntry;
+import austeretony.oxygen_core.client.gui.elements.OxygenDropDownList.OxygenDropDownListWrapperEntry;
 import austeretony.oxygen_core.client.gui.elements.OxygenInventoryLoad;
+import austeretony.oxygen_core.client.gui.elements.OxygenKeyButton;
 import austeretony.oxygen_core.client.gui.elements.OxygenScrollablePanel;
 import austeretony.oxygen_core.client.gui.elements.OxygenSorter;
 import austeretony.oxygen_core.client.gui.elements.OxygenSorter.EnumSorting;
@@ -34,12 +35,13 @@ import austeretony.oxygen_core.common.util.MathUtils;
 import austeretony.oxygen_shop.client.ShopManagerClient;
 import austeretony.oxygen_shop.common.ShopOffer;
 import austeretony.oxygen_shop.common.config.ShopConfig;
+import net.minecraft.client.gui.ScaledResolution;
 
 public class ShopSection extends AbstractGUISection {
 
     private final ShopMenuScreen screen;
 
-    private OxygenButton purchaseButton;
+    private OxygenKeyButton purchaseButton;
 
     private OxygenTexturedButton applyLatestFiltersButton, resetFiltersButton;
 
@@ -77,30 +79,30 @@ public class ShopSection extends AbstractGUISection {
 
     @Override
     public void init() {
-        this.addElement(new ShopBackgroundFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new OxygenDefaultBackgroundWithButtonsUnderlinedFiller(0, 0, this.getWidth(), this.getHeight()));
         this.addElement(new OxygenTextLabel(4, 12, this.getDisplayText(), EnumBaseGUISetting.TEXT_TITLE_SCALE.get().asFloat(), EnumBaseGUISetting.TEXT_ENABLED_COLOR.get().asInt()));
 
         this.addElement(this.applyLatestFiltersButton = new OxygenTexturedButton(205, 20, 5, 5, OxygenGUITextures.CLOCK_ICONS, 5, 5, ClientReference.localize("oxygen_shop.gui.shop.tooltip.latestFilters")));         
         this.addElement(this.resetFiltersButton = new OxygenTexturedButton(212, 20, 5, 5, OxygenGUITextures.CROSS_ICONS, 5, 5, ClientReference.localize("oxygen_shop.gui.shop.tooltip.resetFilters")));         
 
         this.addElement(this.priceSorter = new OxygenSorter(6, 38, EnumSorting.DOWN, ClientReference.localize("oxygen_core.gui.price")));   
-        this.priceSorter.setClickListener((sorting)->{
+        this.priceSorter.setSortingListener((sorting)->{
             this.nameSorter.reset();
             this.filterOffers();
         });
 
         this.addElement(this.nameSorter = new OxygenSorter(12, 38, EnumSorting.INACTIVE, ClientReference.localize("oxygen_core.gui.name")));  
-        this.nameSorter.setClickListener((sorting)->{
+        this.nameSorter.setSortingListener((sorting)->{
             this.priceSorter.reset();
             this.filterOffers();
         });
 
         //offers panel
-        this.addElement(this.offersPanel = new OxygenScrollablePanel(this.screen, 6, 47, this.getWidth() - 105, 16, 1, 80, 8, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
+        this.addElement(this.offersPanel = new OxygenScrollablePanel(this.screen, 6, 47, this.getWidth() - 115, 16, 1, 80, 8, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
 
-        this.offersPanel.<ShopOfferPanelEntry>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
+        this.offersPanel.<ShopOfferPanelEntry>setElementClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
             if (mouseButton == 0)
-                this.addToCart(clicked.index);
+                this.addToCart(clicked.getWrapped());
         });   
 
         //text field
@@ -116,15 +118,15 @@ public class ShopSection extends AbstractGUISection {
         this.addElement(this.inventoryLoad = new OxygenInventoryLoad(6, this.getHeight() - 8));
         this.inventoryLoad.updateLoad();
         this.addElement(this.balanceValue = new OxygenCurrencyValue(this.getWidth() - 14, this.getHeight() - 10));   
-        this.balanceValue.setValue(this.screen.currencyProperties.getIndex(), WatcherHelperClient.getLong(this.screen.currencyProperties.getIndex()));
+        this.balanceValue.setValue(this.screen.getCurrencyProperties().getIndex(), WatcherHelperClient.getLong(this.screen.getCurrencyProperties().getIndex()));
 
         //sub categories filter
         this.subCategoriesList = new OxygenDropDownList(75, 25, 67, "");
         this.addElement(this.subCategoriesList);
 
         //sub categories listener
-        this.subCategoriesList.<OxygenDropDownListEntry<ItemSubCategory>>setClickListener((element)->{
-            subCategoryCached = this.currentSubCategory = element.index;
+        this.subCategoriesList.<OxygenDropDownListWrapperEntry<ItemSubCategory>>setElementClickListener((element)->{
+            subCategoryCached = this.currentSubCategory = element.getWrapped();
             this.filterOffers();
         });
 
@@ -133,12 +135,12 @@ public class ShopSection extends AbstractGUISection {
         //categories filter
         this.categoriesList = new OxygenDropDownList(6, 25, 67, this.currentCategory.localizedName());
         for (ItemCategory category : OxygenManagerClient.instance().getItemCategoriesPreset().getCategories())
-            this.categoriesList.addElement(new OxygenDropDownListEntry<ItemCategory>(category, category.localizedName()));
+            this.categoriesList.addElement(new OxygenDropDownListWrapperEntry<ItemCategory>(category, category.localizedName()));
         this.addElement(this.categoriesList);
 
         //categories listener
-        this.categoriesList.<OxygenDropDownListEntry<ItemCategory>>setClickListener((element)->{
-            this.loadSubCategories(categoryCached = this.currentCategory = element.index);
+        this.categoriesList.<OxygenDropDownListWrapperEntry<ItemCategory>>setElementClickListener((element)->{
+            this.loadSubCategories(categoryCached = this.currentCategory = element.getWrapped());
             this.filterOffers();
         });
 
@@ -146,15 +148,19 @@ public class ShopSection extends AbstractGUISection {
         // * shopping cart
         // *
 
-        this.addElement(new OxygenTextLabel(this.getWidth() - 90, 45, ClientReference.localize("oxygen_shop.gui.shop.cart"), EnumBaseGUISetting.TEXT_SCALE.get().asFloat(), EnumBaseGUISetting.TEXT_ENABLED_COLOR.get().asInt()));
+        this.addElement(new OxygenTextLabel(this.getWidth() - 100, 45, ClientReference.localize("oxygen_shop.gui.shop.cart"), EnumBaseGUISetting.TEXT_SCALE.get().asFloat(), EnumBaseGUISetting.TEXT_ENABLED_COLOR.get().asInt()));
 
-        this.addElement(this.cartPanel = new OxygenScrollablePanel(this.screen, this.getWidth() - 90, 47, 81, 16, 1, ShopConfig.SHOP_CART_SIZE.asInt(), 7, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
+        this.addElement(this.cartPanel = new OxygenScrollablePanel(this.screen, this.getWidth() - 100, 47, 91, 16, 1, ShopConfig.SHOP_CART_SIZE.asInt(), 7, EnumBaseGUISetting.TEXT_PANEL_SCALE.get().asFloat(), true));
 
         this.addElement(this.totalPriceValue = new OxygenCurrencyValue(this.getWidth() - 14, 174));   
-        this.totalPriceValue.setValue(this.screen.currencyProperties.getIndex(), 0L);
+        this.totalPriceValue.setValue(this.screen.getCurrencyProperties().getIndex(), 0L);
 
-        this.addElement(this.purchaseButton = new OxygenButton(this.getWidth() - 90, 173, 40, 10, ClientReference.localize("oxygen_shop.gui.shop.purchaseButton")).disable());
-        this.purchaseButton.setKeyPressListener(Keyboard.KEY_E, ShopManagerClient.instance().getShoppingCartManager()::purchaseItems);
+        this.addElement(this.purchaseButton = new OxygenKeyButton(0, this.getY() + this.getHeight() + this.screen.guiTop - 8, ClientReference.localize("oxygen_shop.gui.shop.purchaseButton"), Keyboard.KEY_E, ShopManagerClient.instance().getShoppingCartManager()::purchaseItems).disable());
+    }
+
+    private void calculateButtonsHorizontalPosition() {
+        ScaledResolution sr = new ScaledResolution(this.mc);
+        this.purchaseButton.setX((sr.getScaledWidth() - (12 + this.textWidth(this.purchaseButton.getDisplayText(), this.purchaseButton.getTextScale()))) / 2 - this.screen.guiLeft);
     }
 
     private void loadSubCategories(ItemCategory category) {
@@ -162,7 +168,7 @@ public class ShopSection extends AbstractGUISection {
         this.subCategoriesList.reset();
         this.subCategoriesList.setDisplayText(this.currentSubCategory.localizedName());
         for (ItemSubCategory subCategory : category.getSubCategories())
-            this.subCategoriesList.addElement(new OxygenDropDownListEntry<ItemSubCategory>(subCategory, subCategory.localizedName()));
+            this.subCategoriesList.addElement(new OxygenDropDownListWrapperEntry<ItemSubCategory>(subCategory, subCategory.localizedName()));
     }
 
     private void filterOffers() {
@@ -174,7 +180,7 @@ public class ShopSection extends AbstractGUISection {
                     offer, 
                     this.screen.getEqualStackAmount(offer.getStackWrapper()), 
                     offer.getPrice() <= this.balanceValue.getValue(),
-                    this.screen.currencyProperties));
+                    this.screen.getCurrencyProperties()));
         }
 
         this.offersPanel.getScroller().reset();
@@ -184,9 +190,9 @@ public class ShopSection extends AbstractGUISection {
     private List<ShopOffer> getOffers() {
         return ShopManagerClient.instance().getOffersContainer().getOffers()
                 .stream()
-                .filter((offer)->(this.filterByCategory(offer)))
-                .filter((offer)->(this.filterByName(offer)))
-                .sorted((o1, o2)->(o1.getStackWrapper().itemId - o2.getStackWrapper().itemId))
+                .filter(this::filterByCategory)
+                .filter(this::filterByName)
+                .sorted((o1, o2)->(o1.getStackWrapper().getItemId() - o2.getStackWrapper().getItemId()))
                 .sorted(this.getSortingComparator())
                 .collect(Collectors.toList());
     }
@@ -227,7 +233,7 @@ public class ShopSection extends AbstractGUISection {
                         offer, 
                         this.screen.getEqualStackAmount(offer.getStackWrapper()), 
                         offer.getPrice() <= this.balanceValue.getValue(),
-                        this.screen.currencyProperties,
+                        this.screen.getCurrencyProperties(),
                         entry.getValue()));
             else
                 ShopManagerClient.instance().getShoppingCartManager().removeItemFromCart(entry.getKey());
@@ -247,7 +253,7 @@ public class ShopSection extends AbstractGUISection {
                     offer, 
                     this.screen.getEqualStackAmount(offer.getStackWrapper()), 
                     offer.getPrice() <= this.balanceValue.getValue(),
-                    this.screen.currencyProperties,
+                    this.screen.getCurrencyProperties(),
                     1));
 
             this.cartPanel.getScroller().reset();
@@ -258,7 +264,7 @@ public class ShopSection extends AbstractGUISection {
     }
 
     public void updateTotalCartPrice() {
-        this.totalPriceValue.setValue(this.screen.currencyProperties.getIndex(), this.calculateTotalCartPrice());
+        this.totalPriceValue.setValue(this.screen.getCurrencyProperties().getIndex(), this.calculateTotalCartPrice());
         this.totalPriceValue.setRed(this.totalPriceValue.getValue() > this.balanceValue.getValue());
 
         this.purchaseButton.setEnabled(!this.cartPanel.buttonsBuffer.isEmpty() && this.balanceValue.getValue() >= this.totalPriceValue.getValue());
@@ -337,6 +343,8 @@ public class ShopSection extends AbstractGUISection {
     public void offersSynchronized() {
         this.filterOffers();
         this.loadCart();
+
+        this.calculateButtonsHorizontalPosition();
     }
 
     public void purchaseSuccessful(long balance, long offerId) {
@@ -346,7 +354,7 @@ public class ShopSection extends AbstractGUISection {
         ShopOfferPanelEntry entry;
         for (GUIButton button : this.offersPanel.buttonsBuffer) {
             entry = (ShopOfferPanelEntry) button;
-            if (entry.index.getPrice() > balance)
+            if (entry.getWrapped().getPrice() > balance)
                 entry.setAvailable(false);
         }
 
@@ -355,9 +363,9 @@ public class ShopSection extends AbstractGUISection {
             CartPanelEntry cartEntry;
             for (GUIButton button : this.cartPanel.buttonsBuffer) {
                 cartEntry = (CartPanelEntry) button;
-                if (cartEntry.index.getPrice() > balance)
+                if (cartEntry.getWrapped().getPrice() > balance)
                     cartEntry.setAvailable(false);
-                if (cartEntry.index.getId() == offerId)
+                if (cartEntry.getWrapped().getId() == offerId)
                     cartEntry.remove();
             }
         } else
