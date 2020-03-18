@@ -4,16 +4,22 @@ oxygen_shop.gui.settings.option.addShopMenu=Меню Магазина
 oxygen_shop.gui.settings.option.alignmentShopMenu=Меню Магазина
 
 oxygen_shop.gui.shop.title=Магазин
-oxygen_shop.gui.shop.category=Категория:
-oxygen_shop.gui.shop.search=Текстовый Поиск:
+oxygen_shop.gui.shop.label.category=Категория:
+oxygen_shop.gui.shop.label.search=Текстовый Поиск:
 
-oxygen_shop.gui.shop.cart=Корзина
-oxygen_shop.gui.shop.purchaseButton=Купить
+oxygen_shop.gui.shop.label.cart=Корзина
+oxygen_shop.gui.shop.label.totalPrice=Общая Стоимость:
+
+oxygen_shop.gui.shop.button.purchase=Купить 
 
 oxygen_shop.gui.shop.tooltip.latestFilters=Недавние
 oxygen_shop.gui.shop.tooltip.resetFilters=Сброс
+oxygen_shop.gui.shop.tooltip.resetCart=Очистить
 
 oxygen_shop.gui.shop.offer.discount=Скидка %s
+
+oxygen_shop.gui.shop.callback.confirmPurchase=Подтвеждение Покупки
+oxygen_shop.gui.shop.callback.confirmPurchase.request=Оплатить товары в корзине?
 
 oxygen_shop.status.message.purchaseSuccessful=Покупка совершена
 oxygen_shop.status.message.purchaseSuccessfulMail=Покупка совершена. Проверить почту: 

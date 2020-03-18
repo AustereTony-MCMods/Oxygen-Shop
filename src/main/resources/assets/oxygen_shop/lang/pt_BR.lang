@@ -5,11 +5,12 @@ oxygen_shop.gui.settings.option.addShopMenu=Menu de Loja
 oxygen_shop.gui.settings.option.alignmentShopMenu=Menu de Loja
 
 oxygen_shop.gui.shop.title=Loja
-oxygen_shop.gui.shop.category=Categoria:
-oxygen_shop.gui.shop.search=Pesquisa de Texto:
+oxygen_shop.gui.shop.label.category=Categoria:
+oxygen_shop.gui.shop.label.search=Pesquisa de Texto:
 
-oxygen_shop.gui.shop.cart=Carrinho
-oxygen_shop.gui.shop.purchaseButton=Comprar
+oxygen_shop.gui.shop.label.cart=Carrinho
+
+oxygen_shop.gui.shop.button.purchase=Comprar
 
 oxygen_shop.gui.shop.tooltip.latestFilters=Mais recentes
 oxygen_shop.gui.shop.tooltip.resetFilters=Resetar

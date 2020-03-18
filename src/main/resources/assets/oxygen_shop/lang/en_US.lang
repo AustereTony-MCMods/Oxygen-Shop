@@ -5,16 +5,22 @@ oxygen_shop.gui.settings.option.addShopMenu=Shop Menu
 oxygen_shop.gui.settings.option.alignmentShopMenu=Shop Menu
 
 oxygen_shop.gui.shop.title=Shop
-oxygen_shop.gui.shop.category=Category:
-oxygen_shop.gui.shop.search=Text Search:
+oxygen_shop.gui.shop.label.category=Category:
+oxygen_shop.gui.shop.label.search=Text Search:
 
-oxygen_shop.gui.shop.cart=Cart
-oxygen_shop.gui.shop.purchaseButton=Buy
+oxygen_shop.gui.shop.label.cart=Cart
+oxygen_shop.gui.shop.label.totalPrice=Total Price:
+
+oxygen_shop.gui.shop.button.purchase=Buy
 
 oxygen_shop.gui.shop.tooltip.latestFilters=Latest
 oxygen_shop.gui.shop.tooltip.resetFilters=Reset
+oxygen_shop.gui.shop.tooltip.resetCart=Clear
 
 oxygen_shop.gui.shop.offer.discount=Discount %s
+
+oxygen_shop.gui.shop.callback.confirmPurchase=Confirm Purchase
+oxygen_shop.gui.shop.callback.confirmPurchase.request=Pay for items in the cart?
 
 oxygen_shop.status.message.purchaseSuccessful=Purchase successful
 oxygen_shop.status.message.purchaseSuccessfulMail=Purchase successful. Check mail: 

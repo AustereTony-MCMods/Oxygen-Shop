@@ -58,14 +58,15 @@ public class CartPanelEntry extends OxygenWrapperPanelEntry<ShopOffer> {
 
     @Override
     public void init() {
-        this.cartItemAmountField = (OxygenNumberField) new OxygenNumberField(31, 9, 15, this.cartItemAmountStr, Short.MAX_VALUE, false, 0, true).initScreen(this.getScreen());
+        this.cartItemAmountField = (OxygenNumberField) new OxygenNumberField(36, 8, 13, "", Short.MAX_VALUE, false, 0, true).initScreen(this.getScreen());
+        this.cartItemAmountField.setText(this.cartItemAmountStr);
 
-        this.decrementButton = new OxygenTexturedButton(25, 11, 5, 5, OxygenGUITextures.MINUS_ICONS, 5, 5, "").initScreen(this.getScreen());
-        this.incrementButton = new OxygenTexturedButton(47, 11, 5, 5, OxygenGUITextures.PLUS_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.decrementButton = new OxygenTexturedButton(30, 10, 5, 5, OxygenGUITextures.MINUS_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.incrementButton = new OxygenTexturedButton(50, 10, 5, 5, OxygenGUITextures.PLUS_ICONS, 5, 5, "").initScreen(this.getScreen());
         this.removeButton = new OxygenTexturedButton(this.getWidth() - 7, 1, 5, 5, OxygenGUITextures.CROSS_ICONS, 5, 5, "").initScreen(this.getScreen());
-        this.purchaseButton = new OxygenTexturedButton(this.getWidth() - 7, 10, 5, 5, OxygenGUITextures.CHECK_ICONS, 5, 5, "").initScreen(this.getScreen());
+        this.purchaseButton = new OxygenTexturedButton(this.getWidth() - 14, 1, 5, 5, OxygenGUITextures.CHECK_ICONS, 5, 5, "").initScreen(this.getScreen());
 
-        this.purchaseButton.setEnabled(this.available);
+        this.updateState(Integer.parseInt(this.cartItemAmountStr));
     }
 
     @Override
@@ -133,7 +134,7 @@ public class CartPanelEntry extends OxygenWrapperPanelEntry<ShopOffer> {
             }
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(46.0F - this.textWidth(this.priceStr, this.getTextScale() - 0.05F), 1 + ((this.currencyProperties.getIconWidth() - this.textHeight(this.getTextScale() - 0.05F)) / 2) + this.currencyProperties.getXOffset(), 0.0F);            
+            GlStateManager.translate(57.0F - this.textWidth(this.priceStr, this.getTextScale() - 0.05F), ((this.currencyProperties.getIconWidth() - this.textHeight(this.getTextScale() - 0.05F)) / 2) + this.currencyProperties.getXOffset(), 0.0F);            
             GlStateManager.scale(this.getTextScale() - 0.05F, this.getTextScale() - 0.05F, 0.0F); 
             this.mc.fontRenderer.drawString(this.priceStr, 0, 0, color, false);
             GlStateManager.popMatrix();    
@@ -142,13 +143,13 @@ public class CartPanelEntry extends OxygenWrapperPanelEntry<ShopOffer> {
 
             GlStateManager.enableBlend(); 
             this.mc.getTextureManager().bindTexture(this.currencyProperties.getIcon());
-            GUIAdvancedElement.drawCustomSizedTexturedRect(48 + this.currencyProperties.getXOffset(), 1 + this.currencyProperties.getYOffset(), 0, 0, this.currencyProperties.getIconWidth(), this.currencyProperties.getIconHeight(), this.currencyProperties.getIconWidth(), this.currencyProperties.getIconHeight());            
+            GUIAdvancedElement.drawCustomSizedTexturedRect(59 + this.currencyProperties.getXOffset(), this.currencyProperties.getYOffset(), 0, 0, this.currencyProperties.getIconWidth(), this.currencyProperties.getIconHeight(), this.currencyProperties.getIconWidth(), this.currencyProperties.getIconHeight());            
             GlStateManager.disableBlend();
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(56.0F, 11.0F, 0.0F);            
+            GlStateManager.translate(60.0F, 11.0F, 0.0F);            
             GlStateManager.scale(this.getTextScale() - 0.05F, this.getTextScale() - 0.05F, 0.0F); 
             this.mc.fontRenderer.drawString(this.totalPriceStr, 0, 0, this.available ? color : this.getDebugColor(), false);
             GlStateManager.popMatrix();   
