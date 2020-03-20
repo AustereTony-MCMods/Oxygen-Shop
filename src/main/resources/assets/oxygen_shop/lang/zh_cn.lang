@@ -1,0 +1,37 @@
+key.oxygen_shop.shopMenu=打开商店菜单
+
+oxygen_shop.gui.settings.module.shop=商店
+oxygen_shop.gui.settings.option.addShopMenu=商店菜单
+oxygen_shop.gui.settings.option.alignmentShopMenu=商店菜单
+
+oxygen_shop.gui.shop.title=商店
+oxygen_shop.gui.shop.label.category=类别:
+oxygen_shop.gui.shop.label.search=文本搜索:
+
+oxygen_shop.gui.shop.label.cart=购物车
+oxygen_shop.gui.shop.label.totalPrice=总价格:
+oxygen_shop.gui.shop.button.purchase=购买
+
+oxygen_shop.gui.shop.tooltip.latestFilters=最近的筛选配置
+oxygen_shop.gui.shop.tooltip.resetFilters=重置筛选器
+oxygen_shop.gui.shop.tooltip.resetCart=清空购物车
+
+oxygen_shop.gui.shop.offer.discount=折扣 %s
+
+oxygen_shop.gui.shop.callback.confirmPurchase=确认购买
+oxygen_shop.gui.shop.callback.confirmPurchase.request=是否为购物车中的商品进行支付？
+oxygen_shop.status.message.purchaseSuccessful=购买成功
+oxygen_shop.status.message.purchaseFailed=购买失败
+oxygen_shop.status.message.offersReloaded=交易已重载
+oxygen_shop.status.message.offersSaved=交易已保存
+oxygen_shop.status.message.offerCreated=交易已创建
+oxygen_shop.status.message.offerCreationFailed=交易创建失败
+oxygen_shop.status.message.offerRemoved=交易已被移除
+
+oxygen_shop.message.clickHere=点击这里
+
+mail.sender.shop=商店
+shop.purchased=商店: 购买
+shop.purchasedItemMessage=你购买了 <§f%s§rx§f%s§r>。
+
+oxygen_shop.command.client.dataReset=Oxygen Shop 客户端数据重置.
