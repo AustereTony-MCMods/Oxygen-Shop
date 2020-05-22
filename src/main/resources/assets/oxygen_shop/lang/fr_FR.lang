@@ -1,34 +1,40 @@
-key.oxygen_shop.shopMenu=Ouvrir le menu du magasin
+key.oxygen_shop.shopMenu=Ouvrir la boutique
 
-oxygen_shop.gui.settings.module.shop=Magasin
-oxygen_shop.gui.settings.option.addShopMenu=Menu du magasin
-oxygen_shop.gui.settings.option.alignmentShopMenu=Menu du magasin
+oxygen_shop.gui.settings.module.shop=Boutique
+oxygen_shop.gui.settings.option.addShopMenu=Menu de la Boutique
+oxygen_shop.gui.settings.option.alignmentShopMenu=Menu de la boutique
 
-oxygen_shop.gui.shop.title=Magasin
-oxygen_shop.gui.shop.label.category=Categorie:
-oxygen_shop.gui.shop.label.search=Texte de recherche:
+oxygen_shop.gui.shop.title=Boutique
+oxygen_shop.gui.shop.label.category=CatÃ©gorie:
+oxygen_shop.gui.shop.label.search=Rechercher:
 
-oxygen_shop.gui.shop.label.cart=Carte
+oxygen_shop.gui.shop.label.cart=Panier
+oxygen_shop.gui.shop.label.totalPrice=Prix total:
 
 oxygen_shop.gui.shop.button.purchase=Acheter
 
 oxygen_shop.gui.shop.tooltip.latestFilters=Dernier
-oxygen_shop.gui.shop.tooltip.resetFilters=Réinitialiser
+oxygen_shop.gui.shop.tooltip.resetFilters=RÃ©initialiser
+oxygen_shop.gui.shop.tooltip.resetCart=Effacer
 
 oxygen_shop.gui.shop.offer.discount=Remise de %s
 
-oxygen_shop.status.message.purchaseSuccessful=Achat réussi
-oxygen_shop.status.message.purchaseFailed=Echec de l'achat
-oxygen_shop.status.message.offersReloaded=Offres actualisées
-oxygen_shop.status.message.offersSaved=Offres sauvegardées
-oxygen_shop.status.message.offerCreated=Offre créée
-oxygen_shop.status.message.offerCreationFailed=Echec de la création d'offre
-oxygen_shop.status.message.offerRemoved=Offre supprimée
+oxygen_shop.gui.shop.callback.confirmPurchase=Confirmer l'achat
+oxygen_shop.gui.shop.callback.confirmPurchase.request=Voulez-vous acheter les items du panier ?
 
-oxygen_shop.status.message.inventoryFull=L'inventaire est plein
-oxygen_shop.status.message.mailboxFull=La boîte mail est pleine
+oxygen_shop.status.message.purchaseSuccessful=Achat rÃ©ussi!
+oxygen_shop.status.message.purchaseSuccessfulMail=Achat rÃ©ussi. VÃ©rifiez vos messages du menu TAB!  
+oxygen_shop.status.message.purchaseFailed=Ã‰chec de l'achat
+oxygen_shop.status.message.offersReloaded=Offres actualisÃ©es
+oxygen_shop.status.message.offersSaved=Offres sauvegardÃ©es
+oxygen_shop.status.message.offerCreated=Offre crÃ©Ã©e
+oxygen_shop.status.message.offerCreationFailed=Ã‰chec de la crÃ©ation de l'offre
+oxygen_shop.status.message.offerRemoved=Offre supprimÃ©e
 
-shop.purchased=Shop: Achat
-shop.purchasedItemMessage=Tu as acheté un objet dans le magasin.
+oxygen_shop.message.clickHere=Clique ici !
 
-oxygen_shop.command.client.dataReset=Data du client d'Oxygen Shop réinitialisé.
+mail.sender.shop=Boutique
+shop.purchased=Boutique: Ton achat
+shop.purchasedItemMessage=Tu as achetÃ© <Â§f%sÂ§rxÂ§f%sÂ§r>.
+
+oxygen_shop.command.client.dataReset=Boutique Client Data Reset.
